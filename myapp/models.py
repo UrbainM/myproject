@@ -10,19 +10,19 @@ class Visualization(models.Model):
     chart_type = models.CharField(max_length=50, choices=[
         ('bar', 'Bar Chart'),
         ('line', 'Line Chart'),
-        ('pie', 'Pie Chart'),
-        # Add more chart types as needed
+        ('pie', 'Pie Chart')
     ])
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.title
 
 class DataSet(models.Model):
-    visualization = models.ForeignKey(Visualization, on_delete=models.CASCADE)
-    label = models.CharField(max_length=255)
-    value = models.FloatField()
+    labels = models.CharField(default='default_label', max_length=255)
+    name = models.CharField(max_length=255)
+    values = models.FloatField()
 
-    def __str__(self):
-        return f"{self.visualization.title} - {self.label}"
+    
+class SeabornDataset(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField()
+    data = models.JSONField(default=None)

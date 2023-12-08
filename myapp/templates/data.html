@@ -1,11 +1,30 @@
-<!DOCTYPE html>
-<html>
-    <header>
-        <title>
-            Data
-        </title>
-    </header>
-    <body>
-        Data
-    </body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2>Choose Dataset</h2>
+
+        <form method="post" id="datasetForm" action="{% url 'visualization' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="datasetSelect" class="form-label">Select Dataset:</label>
+                <select class="form-select" id="datasetSelect" name="dataset">
+                    {% for dataset in datasets %}
+                        <option value="{{ dataset.id }}">{{ dataset.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Load Dataset</button>
+        </form>
+    </div>
+    
+    <script>
+        // Redirect to the visualization page with the selected dataset ID
+        document.getElementById('datasetForm').addEventListener('submit', function(event) {
+            var selectedDataset = document.getElementById('datasetSelect').value;
+            window.location.href = '{% url "visualization" %}?dataset=' + selectedDataset;
+            event.preventDefault();
+        });
+    </script>
+{% endblock %}
