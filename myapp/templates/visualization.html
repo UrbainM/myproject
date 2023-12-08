@@ -1,0 +1,157 @@
+<!-- myapp/templates/visualization.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2>Data Visualization Tool</h2>
+
+        <!-- Visualization Options -->
+        <form id="visualizationForm">
+            <div class="mb-3">
+                <label for="chartType" class="form-label">Select Chart Type:</label>
+                <select class="form-select" id="chartType">
+                    <option value="bar">Bar Chart</option>
+                    <option value="line">Line Chart</option>
+                    <option value="pie">Pie Chart</option>
+                    <!-- Add more chart types as needed -->
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="chartTitle" class="form-label">Chart Title:</label>
+                <input type="text" class="form-control" id="chartTitle" placeholder="Enter chart title">
+            </div>
+
+            <div class="mb-3">
+                <label for="chartColor" class="form-label">Chart Color:</label>
+                <input type="color" class="form-control" id="chartColor" value="#4CAF50">
+            </div>
+
+            <div class="mb-3">
+                <label for="dataLabel" class="form-label">Data Label:</label>
+                <input type="text" class="form-control" id="dataLabel" placeholder="Enter label">
+            </div>
+
+            <div class="mb-3">
+                <label for="dataValue" class="form-label">Data Value:</label>
+                <input type="number" class="form-control" id="dataValue" placeholder="Enter value">
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick="addData()">Add Data</button>
+            <button type="button" class="btn btn-danger" onclick="clearData()">Clear Data</button>
+        </form>
+
+        <!-- Data Table -->
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th scope="col">Label</th>
+                    <th scope="col">Value</th>
+                </tr>
+            </thead>
+            <tbody id="dataTableBody">
+                <!-- Data rows will be added dynamically -->
+            </tbody>
+        </table>
+
+        <!-- Chart Configuration -->
+        <div class="mt-4">
+            <h4>Chart Configuration</h4>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="showLegend">
+                <label class="form-check-label" for="showLegend">Show Legend</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="showGrid">
+                <label class="form-check-label" for="showGrid">Show Grid</label>
+            </div>
+        </div>
+
+        <!-- Chart Canvas -->
+        <div class="mt-4">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var data = [];
+
+        function addData() {
+            var label = document.getElementById('dataLabel').value;
+            var value = parseFloat(document.getElementById('dataValue').value);
+
+            if (label && !isNaN(value)) {
+                data.push({ label: label, value: value });
+                updateDataTable();
+                updateChart();
+            }
+        }
+
+        function clearData() {
+            data = [];
+            updateDataTable();
+            updateChart();
+        }
+
+        function updateDataTable() {
+            var tableBody = document.getElementById('dataTableBody');
+            tableBody.innerHTML = '';
+
+            for (var i = 0; i < data.length; i++) {
+                var row = '<tr><td>' + data[i].label + '</td><td>' + data[i].value + '</td></tr>';
+                tableBody.innerHTML += row;
+            }
+        }
+
+        function updateChart() {
+            var ctx = document.getElementById('myChart').getContext('2d');
+            var chartType = document.getElementById('chartType').value;
+            var chartTitle = document.getElementById('chartTitle').value;
+            var chartColor = document.getElementById('chartColor').value;
+
+            var showLegend = document.getElementById('showLegend').checked;
+            var showGrid = document.getElementById('showGrid').checked;
+
+            var chartConfig = {
+                type: chartType,
+                data: {
+                    labels: data.map(function (item) { return item.label; }),
+                    datasets: [{
+                        label: 'Data Visualization',
+                        data: data.map(function (item) { return item.value; }),
+                        backgroundColor: chartColor,
+                        borderColor: chartColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: showLegend
+                        },
+                        grid: {
+                            display: showGrid
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            };
+
+            if (chartTitle) {
+                chartConfig.options.plugins.title = {
+                    display: true,
+                    text: chartTitle
+                };
+            }
+
+            var myChart = new Chart(ctx, chartConfig);
+        }
+    </script>
+{% endblock %}

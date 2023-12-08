@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+    <canvas id="myChart"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for point in data %}"{{ point.label }}", {% endfor %}],
+                datasets: [{
+                    label: 'Data Visualization',
+                    data: [{% for point in data %}{{ point.value }}, {% endfor %}],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                onClick: function (event, elements) {
+                    if (elements.length > 0) {
+                        var label = myChart.data.labels[elements[0].index];
+                        // Implement logic to navigate to a detailed view or display more information
+                        console.log('Clicked on ' + label);
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        // ... (previous code) ...
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for point in data %}"{{ point.label }}", {% endfor %}],
+                datasets: [{
+                    label: 'Data Visualization',
+                    data: [{% for point in data %}{{ point.value }}, {% endfor %}],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            return 'Value: ' + tooltipItem.yLabel;
+                        }
+                    }
+                },
+                onClick: function (event, elements) {
+                    if (elements.length > 0) {
+                        var label = myChart.data.labels[elements[0].index];
+                        // Implement logic to navigate to a detailed view or display more information
+                        console.log('Clicked on ' + label);
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

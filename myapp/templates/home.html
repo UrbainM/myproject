@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="jumbotron">
+        <h1>Welcome</h1>
+        <p class="lead">Explore and visualize our cozy data environment.</p>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <canvas id="myChart"></canvas>
+            </div>
+            <div class="col-md-6">
+                <h2>About Us</h2>
+                <p>
+                    Explore the charts, and feel free to reach out if you have any
+                    questions or suggestions.
+                </p>
+                <p>
+                    <a class="btn btn-primary btn-lg" href="#" role="button">Contact Us</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for point in data %}"{{ point.label }}", {% endfor %}],
+                datasets: [{
+                    label: 'Data Visualization',
+                    data: [{% for point in data %}{{ point.value }}, {% endfor %}],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}
