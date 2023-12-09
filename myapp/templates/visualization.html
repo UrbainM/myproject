@@ -1,81 +1,80 @@
 {% extends 'base.html' %}
 
+{% block title %}Visualization{% endblock %}
+
 {% block content %}
     <div class="container mt-4">
-        <h2>Data Visualization Tool</h2>
-
-        <form id="visualizationForm">
+        <h1 class="mb-4">Visualization</h1>
+        
+        <form method="post">
+            {% csrf_token %}
             <div class="mb-3">
-                <label for="chartType" class="form-label">Select Chart Type:</label>
-                <select class="form-select" id="chartType">
-                    <option value="bar">Bar Chart</option>
-                    <option value="line">Line Chart</option>
-                    <option value="scatter">Scatter Plot</option>
+                <label for="column" class="form-label">Select a column:</label>
+                <select name="column" id="columnSelect" class="form-select">
+                    {% for column_name in column_names %}
+                        <option value="{{ column_name }}">{{ column_name }}</option>
+                    {% endfor %}
                 </select>
             </div>
-
-            <button type="button" class="btn btn-primary" onclick="updateChart()">Update Chart</button>
+            <button type="submit" class="btn btn-primary">Visualize</button>
         </form>
 
-        <table class="table mt-4">
-            <thead>
-                <tr>
-                    <th scope="col">Label</th>
-                    <th scope="col">Value</th>
-                </tr>
-            </thead>
-            <tbody id="dataTableBody">
-            </tbody>
-        </table>
+        <div class="mt-4">
+            <label for="chartType" class="form-label">Select chart type:</label>
+            <select id="chartType" onchange="updateChartType()" class="form-select">
+                <option value="bar">Bar Chart</option>
+                <option value="line">Line Chart</option>
+                <option value="radar">Radar Chart</option>
+                <option value="doughnut">Doughnut Chart</option>
+                <option value="pie">Pie Chart</option>
+            </select>
+        </div>
 
         <div class="mt-4">
-            <canvas id="myChart"></canvas>
+            <label for="datasetColor" class="form-label">Dataset Color:</label>
+            <input type="color" id="datasetColor" class="form-control" onchange="updateDatasetColor()" value="#4CAF50">
         </div>
+
+        <canvas id="myChart" class="mt-4"></canvas>
+
+        <button class="btn btn-secondary mt-2" onclick="downloadChart()">Download Chart</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        var data = {{ data|safe }};
-        var labels = data.labels;
-        var values = data.values;
+        var chartData = {{ chart_json | safe }};
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart;
 
-        updateDataTable();
-        updateChart();
+        function updateChartType() {
+            var selectedType = document.getElementById('chartType').value;
 
-        function updateDataTable() {
-            var tableBody = document.getElementById('dataTableBody');
-            tableBody.innerHTML = '';
-
-            for (var i = 0; i < labels.length; i++) {
-                var row = '<tr><td>' + labels[i] + '</td><td>' + values[i] + '</td></tr>';
-                tableBody.innerHTML += row;
+            // Destroy the current chart to prevent conflicts
+            if (myChart) {
+                myChart.destroy();
             }
-        }
 
-        function updateChart() {
-            var ctx = document.getElementById('myChart').getContext('2d');
-            var chartType = document.getElementById('chartType').value;
-
-            var myChart = new Chart(ctx, {
-                type: chartType,
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Data Visualization',
-                        data: values,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
+            myChart = new Chart(ctx, {
+                type: selectedType,
+                data: chartData.data,
+                options: chartData.options
             });
         }
+
+        function updateDatasetColor() {
+            var datasetColor = document.getElementById('datasetColor').value;
+            myChart.data.datasets[0].backgroundColor = datasetColor;
+            myChart.update();
+        }
+
+        function downloadChart() {
+            var downloadLink = document.createElement('a');
+            downloadLink.href = document.getElementById('myChart').toDataURL('image/png');
+            downloadLink.download = 'chart.png';
+            downloadLink.click();
+        }
+
+        // Initial chart creation
+        myChart = new Chart(ctx, chartData);
     </script>
 {% endblock %}

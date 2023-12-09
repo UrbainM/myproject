@@ -1,28 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
     <div>
-        <!-- Add a dropdown menu for selecting chart type -->
         <label for="chartType">Select Chart Type:</label>
         <select id="chartType">
             <option value="bar">Bar Chart</option>
             <option value="line">Line Chart</option>
             <option value="pie">Pie Chart</option>
         </select>
-        <!-- Add a button to fetch new data and update the chart -->
         <button onclick="fetchAndUpdateData()">Update Data</button>
     </div>
 
-    <!-- Canvas for the chart -->
     <canvas id="myChart"></canvas>
 
-    <!-- Chart.js and required plugins -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
 
     <script>
-        // Create chart instance on page load
         var ctx = document.getElementById('myChart').getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'bar',
@@ -88,7 +83,6 @@
                 onClick: function (event, elements) {
                     if (elements.length > 0) {
                         var label = myChart.data.labels[elements[0].index];
-                        // Implement logic to navigate to a detailed view or display more information
                         console.log('Clicked on ' + label);
                     }
                 }

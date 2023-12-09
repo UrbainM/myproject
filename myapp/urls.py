@@ -4,7 +4,7 @@ from .views import home, chart, visualization, data, add_dataset, seaborn_datase
 urlpatterns = [
     path('', home, name='home'),
     path('chart/', chart, name='chart'),
-    path('visualization/', visualization, name='visualization'),
+    path('visualization/<str:dataset>/', visualization, name='visualization'),
     path('data/', data, name='data'),
     path('add_dataset/', add_dataset, name='add_dataset'),
     path('seaborn_datasets/', seaborn_datasets, name='seaborn_datasets'),
